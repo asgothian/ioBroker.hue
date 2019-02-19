@@ -215,9 +215,15 @@ function startAdapter(options) {
                         finalLS.b = Math.round(rgb.Blue  * 254);
                     }
                     if ('ct' in ls) {
-                        //finalLS.ct = Math.max(153, Math.min(500, ls.ct));
-                        finalLS.ct = Math.max(2200, Math.min(6500, ls.ct));
-                        finalLS.ct = (500 - 153) - ((finalLS.ct - 2200) / (6500 - 2200)) * (500 - 153) + 153;
+                        if (ls.ct > 1500)
+                        {
+                          //finalLS.ct = Math.max(153, Math.min(500, ls.ct));
+                          finalLS.ct = Math.max(2200, Math.min(6500, ls.ct));
+                          finalLS.ct = (500 - 153) - ((finalLS.ct - 2200) / (6500 - 2200)) * (500 - 153) + 153;
+                        }
+                        else {
+                          finalLS.ct = Math.max(153, Math.min(500, ls.ct));
+                        }
 
                         lightState = lightState.ct(finalLS.ct);
                         if (!lampOn && (!('bri' in ls) || ls.bri === 0)) {
@@ -302,8 +308,12 @@ function startAdapter(options) {
                         lightState = lightState.hue(finalLS.hue);
                     }
                     if ('ct_inc' in ls && !('ct' in finalLS) && 'ct' in alls) {
-                        alls.ct = (500 - 153) - ((alls.ct - 2200) / (6500 - 2200)) * (500 - 153) + 153;
-
+                        if (alls.ct > 1500)
+                        {
+                          alls.ct = (500 - 153) - ((alls.ct - 2200) / (6500 - 2200)) * (500 - 153) + 153;
+                        }
+                        alls.ct = Math.max(153, Math.min(500, alls.ct));
+// what is this ? why is it rescaled again ?
                         finalLS.ct = (((((alls.ct - 153) + ls.ct_inc) % 348) + 348) % 348) + 153;
                         if (!lampOn && (!('bri' in ls) || ls.bri === 0)) {
                             lightState = lightState.on();
@@ -417,7 +427,7 @@ function startAdapter(options) {
                                         adapter.setState([context.id, finalState].join('.'), {val: context.finalLS[finalState], ack: true});
                                     } else
                                     if (finalState === 'ct') {
-                                        context.finalLS[finalState] = (6500 - 2200) - ((context.finalLS[finalState] - 153) / (500 - 153)) * (6500 - 2200) + 2200;
+//                                        context.finalLS[finalState] = (6500 - 2200) - ((context.finalLS[finalState] - 153) / (500 - 153)) * (6500 - 2200) + 2200;
                                         adapter.setState([context.id, finalState].join('.'), {val: context.finalLS[finalState], ack: true});
                                     } else
                                     if (finalState === 'effect') {
@@ -465,7 +475,7 @@ function startAdapter(options) {
                     clearInterval(pollingInterval);
                     pollingInterval = null;
                 }
-    
+
                 if (reconnectTimeout) {
                     clearTimeout(reconnectTimeout);
                     reconnectTimeout = null;
@@ -738,13 +748,13 @@ function connect(cb) {
                pollSWOrgIds.push(sid);
 
                let sensorName =  sensor.name.replace(/\s/g, '');
-               
+
                for (let state in sensor.state) {
                   if (!sensor.state.hasOwnProperty(state)) {
                       continue;
                   }
                   let objId = channelName  + '.' + state;
-  
+
                   let lobj = {
                       _id:        adapter.namespace + '.' + objId.replace(/\s/g, '_'),
                       type:       'state',
@@ -757,7 +767,7 @@ function connect(cb) {
                           id:     sid
                       }
                   };
-  
+
                   switch (state) {
                       case 'on':
                           lobj.common.type = 'boolean';
@@ -768,19 +778,19 @@ function connect(cb) {
                           lobj.common.write = false;
                           lobj.common.role  = 'indicator.reachable';
                           break;
-                      case 'buttonevent': 
+                      case 'buttonevent':
                           lobj.common.type = 'number';
                           lobj.common.role = 'state';
                           break;
-                      case 'lastupdated': 
+                      case 'lastupdated':
                           lobj.common.type = 'string';
                           lobj.common.role = 'date';
                           break;
-                      case 'battery': 
+                      case 'battery':
                           lobj.common.type = 'number';
                           lobj.common.role = 'config';
                           break;
-                      case 'pending': 
+                      case 'pending':
                           lobj.common.type = 'number';
                           lobj.common.role = 'config';
                           break;
@@ -810,9 +820,9 @@ function connect(cb) {
                           adapter.log.info('skip switch: ' + objId);
                           break;
                   }
-  
+
                   objs.push(lobj);
-                  
+
                   var value = sensor.state[state];
                   if (state === 'temperature'){
                 	  value = convertTemperature(value);
@@ -1455,7 +1465,7 @@ function pollSwitch(count, callback) {
                     if (state === 'temperature') {
                     	value = convertTemperature(value);
     				}
-                    
+
                     states.push({id: lobj._id, val: value});
                 }
             }
@@ -1518,4 +1528,4 @@ if (module && module.parent) {
 } else {
     // or start the instance directly
     startAdapter();
-} 
+}
