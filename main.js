@@ -225,7 +225,7 @@ adapter.log.info('temp_Msg q1' + JSON.stringify(idStates[idState]));
                         else {
                           finalLS.ct = Math.max(153, Math.min(500, ls.ct));
                         }
-adapter.log.info('temp_Msg P1' + JSON.stringify(finalLS)))
+adapter.log.info('temp_Msg P1' + JSON.stringify(finalLS))
                         lightState = lightState.ct(finalLS.ct);
                         if (!lampOn && (!('bri' in ls) || ls.bri === 0)) {
                             lightState = lightState.on();
