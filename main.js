@@ -96,7 +96,7 @@ function startAdapter(options) {
                             break;
                         case 'ct':
                             alls[iddp] = idStates[idState].val;
-console.error('temp_Msg q1' + JSON.stringify(idStates[idState])));
+adapter.log.info('temp_Msg q1' + JSON.stringify(idStates[idState]));
                             if (dp === 'ct') {
                                 ls[iddp] = idStates[idState].val;
                             }
@@ -225,7 +225,7 @@ console.error('temp_Msg q1' + JSON.stringify(idStates[idState])));
                         else {
                           finalLS.ct = Math.max(153, Math.min(500, ls.ct));
                         }
-console.error('temp_Msg P1' + JSON.stringify(finalLS)))
+adapter.log.info('temp_Msg P1' + JSON.stringify(finalLS)))
                         lightState = lightState.ct(finalLS.ct);
                         if (!lampOn && (!('bri' in ls) || ls.bri === 0)) {
                             lightState = lightState.on();
@@ -316,7 +316,7 @@ console.error('temp_Msg P1' + JSON.stringify(finalLS)))
                         alls.ct = Math.max(153, Math.min(500, alls.ct));
 // what is this ? why is it rescaled again ?
                         finalLS.ct = (((((alls.ct - 153) + ls.ct_inc) % 348) + 348) % 348) + 153;
-console.error('temp_Msg P2' + JSON.stringify(finalLS)));
+adapter.log.info('temp_Msg P2' + JSON.stringify(finalLS));
                         if (!lampOn && (!('bri' in ls) || ls.bri === 0)) {
                             lightState = lightState.on();
                             lightState = lightState.bri(254);
@@ -430,7 +430,7 @@ console.error('temp_Msg P2' + JSON.stringify(finalLS)));
                                     } else
                                     if (finalState === 'ct') {
 //                                        context.finalLS[finalState] = (6500 - 2200) - ((context.finalLS[finalState] - 153) / (500 - 153)) * (6500 - 2200) + 2200;
-console.error('temp_Msg P3' + JSON.stringify(context.finalLS)));
+adapter.log.info('temp_Msg P3' + JSON.stringify(context.finalLS));
 
                                         adapter.setState([context.id, finalState].join('.'), {val: context.finalLS[finalState], ack: true});
                                     } else
